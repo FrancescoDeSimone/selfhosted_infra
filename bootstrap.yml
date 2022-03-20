@@ -1,0 +1,52 @@
+---
+
+- hosts: all
+  become: true
+  remote_user: root
+  pre_tasks:
+    - name: install updates (Void)
+      xbps:
+        update_cache: yes
+
+- hosts: 127.0.0.1
+  pre_tasks:
+    - name: generate SSH key
+      openssh_keypair:
+        path: "~/.ssh/ansible"
+        type: ed25519
+        state: present
+        force: no
+
+- hosts: all
+  become: true
+  remote_user: root
+  tasks:
+  - name: create robot user
+    user:
+      name: robot
+      groups: root
+
+  - name: add ssh key for robot
+    authorized_key:
+      user: robot
+      state: present
+      key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/ansible.pub') }}"
+
+  - name: add sudoers file for robot
+    copy:
+      src: sudoer_robot
+      dest: /etc/sudoers.d/robot
+      owner: root
+      group: root
+      mode: 0440
+  - name: Ensure only root can access with password
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      state: absent
+      line: "Match User robot\nPasswordAuthentication no"
+    register: sshd
+  - name: restart ssh (void)
+    service:
+      name: sshd
+      state: restarted
+    when: sshd.changed
