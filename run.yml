@@ -33,6 +33,7 @@
       service:
         name: zramen
         state: started
+      when: ansible_distribution == "Void"
 
     - name: install python library for docker-compose
       pip:
