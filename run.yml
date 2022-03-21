@@ -66,6 +66,7 @@
     - name: start docker-compose.yml files
       docker_compose:
         project_src: /opt/docker/docker_compose
+        recreate: always
         files:
           - booksonic.yml
           - duckdns.yml
@@ -80,3 +81,5 @@
           - transmission.yml
           - watchtower.yml
           - glances.yml
+          - minidlna.yml
+

@@ -5,9 +5,10 @@ services:
       context: ./glances
       dockerfile: Dockerfile
     restart: always
-    ports:
-      - "61208:61208"
+    # ports:
+    #   - "61208:61208"
       # - "61209:61209"
+    network_mode: host
     environment:
       # - GLANCES_OPT="-w"
       GLANCES_OPT: "-w"
