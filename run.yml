@@ -25,8 +25,10 @@
           - python3-devel
 
     - name: copy zramen service in /var/service (Void)
-      shell:
-        cmd: "[ -G /var/service/zramen ] || ln -s /etc/sv/zramen /var/service"
+      file:
+        src: /etc/sv/zramen
+        dest: /var/service
+        state: link
       when: ansible_distribution == "Void"
 
     - name: start zramen service
@@ -42,8 +44,10 @@
           - docker-compose
 
     - name: copy docker service in /var/service (Void)
-      shell:
-        cmd: "[ -G /var/service/docker ] || ln -s /etc/sv/docker /var/service"
+      file:
+        src: /etc/sv/docker
+        dest: /var/service
+        state: link
       when: ansible_distribution == "Void"
 
     - name: start docker service
@@ -63,15 +67,16 @@
       docker_compose:
         project_src: /opt/docker/docker_compose
         files:
-          # - booksonic.yml
+          - booksonic.yml
           - duckdns.yml
-          # - flame.yml
-          # - homeassistant.yml
-          # - homer.yml
-          # - jackett.yml
-          # - jellyfin.yml
-          # - nextcloud.yml
+          - flame.yml
+          - homeassistant.yml
+          - homer.yml
+          - jackett.yml
+          - jellyfin.yml
+          - nextcloud.yml
           - pihole.yml
-          # - sonar.yml
-          # - transmission.yml
-          # - watchtower.yml
+          - sonar.yml
+          - transmission.yml
+          - watchtower.yml
+          - glances.yml
