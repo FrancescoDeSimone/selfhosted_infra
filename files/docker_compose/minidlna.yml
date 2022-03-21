@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+    minidlna:
+        network_mode: host
+        # volumes:
+        #     - '/media:/media/audio'
+        #     - '/media:/media/video'
+        environment:
+            - 'MINIDLNA_MEDIA_DIR_1=A,/media/audio'
+            - 'MINIDLNA_MEDIA_DIR_2=V,/media/video'
+            - MINIDLNA_FRIENDLY_NAME=MyMini
+        image: vladgh/minidlna
