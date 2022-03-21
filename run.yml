@@ -15,6 +15,7 @@
     - name: install package
       package:
         name:
+          - zramen
           - htop
           - vim
           - docker
@@ -23,15 +24,25 @@
           - libffi-devel
           - python3-devel
 
+    - name: copy zramen service in /var/service (Void)
+      shell:
+        cmd: "[ -G /var/service/zramen ] || ln -s /etc/sv/zramen /var/service"
+      when: ansible_distribution == "Void"
+
+    - name: start zramen service
+      service:
+        name: zramen
+        state: started
+
     - name: install python library for docker-compose
       pip:
-        name: 
+        name:
           - python-docker
           - docker-compose
 
     - name: copy docker service in /var/service (Void)
       shell:
-        cmd: "[ -z /var/service/docker ] && ln -s /etc/sv/docker /var/service || echo \"ok\""
+        cmd: "[ -G /var/service/docker ] || ln -s /etc/sv/docker /var/service"
       when: ansible_distribution == "Void"
 
     - name: start docker service
@@ -47,19 +58,19 @@
         group: root
         mode: 0644
 
-    - name: start docker-compose.yml files 
+    - name: start docker-compose.yml files
       docker_compose:
         project_src: /opt/docker/docker_compose
-        files: 
-          - booksonic.yml
+        files:
+          # - booksonic.yml
           - duckdns.yml
-          - flame.yml
-          - homeassistant.yml
-          - homer.yml
-          - jackett.yml
-          - jellyfin.yml
-          - nextcloud.yml
+          # - flame.yml
+          # - homeassistant.yml
+          # - homer.yml
+          # - jackett.yml
+          # - jellyfin.yml
+          # - nextcloud.yml
           - pihole.yml
-          - sonar.yml
-          - transmission.yml
-          - watchtower.yml
+          # - sonar.yml
+          # - transmission.yml
+          # - watchtower.yml
