@@ -57,16 +57,20 @@
       state: restarted
     when: sshd.changed
 
+  - name: check if swapfile exist
+    stat:
+      path: /swapfile
+    register: swap
   - name: create swap file
     shell: |
       fallocate -l 8G /swapfile
       chmod 600 /swapfile
       mkswap /swapfile
       swapon /swapfile
+    when: swap.stat.exists == false
 
   - name: add swap to fstap
     lineinfile:
       path: /etc/fstab
-      state: absent
       line: "/swapfile swap swap defaults 0 0"
 
