@@ -1,0 +1,27 @@
+version: '2.4'
+services:
+  transmission:
+    image: lscr.io/linuxserver/transmission
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    # volumes:
+    #   - <path to data>:/config
+    #   - <path to downloads>:/downloads
+    #   - <path to watch folder>:/watch
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    restart: unless-stopped
+
+  telegram-transmission-bot:
+    container_name: telegram-transmission-bot
+    restart: on-failure
+    depends_on:
+      - transmission
+    network_mode: 'host'
+    image: kevinhalpin/transmission-telegram:latest
+    # command: '-token=${TELEGRAM_TRANSMISSION_BOT} -master=${TELEGRAM_USERNAME} -url=${TRANSMISSION_URL} -   username=${TRANSMISSION_USERNAME} -password=${PASS}'

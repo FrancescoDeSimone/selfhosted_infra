@@ -1,0 +1,65 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+    - name: update cache (Void)
+      xbps:
+        update_cache: yes
+      when: ansible_distribution == "Void"
+
+- hosts: all
+  become: true
+  tasks:
+
+    - name: install package
+      package:
+        name:
+          - htop
+          - vim
+          - docker
+          - python3-pip
+          - gcc
+          - libffi-devel
+          - python3-devel
+
+    - name: install python library for docker-compose
+      pip:
+        name: 
+          - python-docker
+          - docker-compose
+
+    - name: copy docker service in /var/service (Void)
+      shell:
+        cmd: "[ -z /var/service/docker ] && ln -s /etc/sv/docker /var/service || echo \"ok\""
+      when: ansible_distribution == "Void"
+
+    - name: start docker service
+      service:
+        name: docker
+        state: started
+
+    - name: copy docker-compose.yml files
+      copy:
+        src: docker_compose
+        dest: /opt/docker
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: start docker-compose.yml files 
+      docker_compose:
+        project_src: /opt/docker/docker_compose
+        files: 
+          - booksonic.yml
+          - duckdns.yml
+          - flame.yml
+          - homeassistant.yml
+          - homer.yml
+          - jackett.yml
+          - jellyfin.yml
+          - nextcloud.yml
+          - pihole.yml
+          - sonar.yml
+          - transmission.yml
+          - watchtower.yml
