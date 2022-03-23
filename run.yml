@@ -23,6 +23,33 @@
           - gcc
           - libffi-devel
           - python3-devel
+          - cronie
+
+    - name: create swap file
+      shell: |
+        [ $(swapon | grep swapfile) != "" ] || swapoff /swapfile
+        rm -f /swapfile
+        fallocate -l 8G /swapfile
+        chmod 600 /swapfile
+        mkswap /swapfile
+        swapon /swapfile
+
+    - name: add swap to fstap
+      lineinfile:
+        path: /etc/fstab
+        line: "/swapfile swap swap defaults 0 0"
+
+    - name: copy cron service in /var/service (Void)
+      file:
+        src: /etc/sv/cronie
+        dest: /var/service
+        state: link
+      when: ansible_distribution == "Void"
+
+    - name: start cron service
+      service:
+        name: cronie
+        state: started
 
     - name: copy zramen service in /var/service (Void)
       file:
@@ -68,18 +95,28 @@
         project_src: /opt/docker/docker_compose
         recreate: always
         files:
-          - booksonic.yml
-          - duckdns.yml
-          - flame.yml
-          - homeassistant.yml
-          - homer.yml
-          - jackett.yml
-          - jellyfin.yml
-          - nextcloud.yml
-          - pihole.yml
-          - sonar.yml
-          - transmission.yml
           - watchtower.yml
+          - dashy.yml
           - glances.yml
-          - minidlna.yml
+          # - minidlna.yml
+          # - booksonic.yml
+          # - duckdns.yml
+          # - homeassistant.yml
+          # - jackett.yml
+          # - jellyfin.yml
+          # - nextcloud.yml
+          # - pihole.yml
+          # - sonar.yml
+          # - transmission.yml
 
+    - name: "cleanup docker"
+      cron:
+        name: "cleanup docker"
+        hour: "23"
+        job: "docker system prune --all -f && docker volume prune --force"
+
+    - name: "update the system"
+      cron:
+        name: "update the system"
+        hour: "23"
+        job: "xbps-install -Syyu"
