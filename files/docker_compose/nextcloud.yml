@@ -14,3 +14,16 @@ services:
     ports:
       - 4433:443
     restart: unless-stopped
+  db:
+    image: lscr.io/linuxserver/mariadb
+    container_name: mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=test
+      - TZ=Europe/London
+    # volumes:
+    #   - path_to_data:/config
+    ports:
+      - 3306:3306
+    restart: unless-stopped
