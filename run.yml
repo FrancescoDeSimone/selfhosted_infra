@@ -83,6 +83,8 @@
         state: started
 
     - name: copy docker-compose.yml files
+      tags:
+        - docker
       copy:
         src: docker_compose
         dest: /opt/docker
@@ -91,6 +93,8 @@
         mode: 0644
 
     - name: Start docker-compose.yml files
+      tags:
+        - docker
       docker_compose:
         project_src: /opt/docker/docker_compose
         recreate: always
@@ -98,6 +102,7 @@
           - watchtower.yml
           - dashy.yml
           - glances.yml
+          - pihole.yml
           # - minidlna.yml
           # - booksonic.yml
           # - duckdns.yml
@@ -105,7 +110,6 @@
           # - jackett.yml
           # - jellyfin.yml
           # - nextcloud.yml
-          # - pihole.yml
           # - sonar.yml
           # - transmission.yml
 
