@@ -12,7 +12,7 @@
   become: true
   tasks:
 
-    - name: install package
+    - name: Install package
       package:
         name:
           - zramen
@@ -25,7 +25,7 @@
           - python3-devel
           - cronie
 
-    - name: create swap file
+    - name: Create swap file
       shell: |
         [ $(swapon | grep swapfile) != "" ] || swapoff /swapfile
         rm -f /swapfile
@@ -34,7 +34,7 @@
         mkswap /swapfile
         swapon /swapfile
 
-    - name: add swap to fstap
+    - name: add swap to fstab
       lineinfile:
         path: /etc/fstab
         line: "/swapfile swap swap defaults 0 0"
@@ -90,7 +90,7 @@
         group: root
         mode: 0644
 
-    - name: start docker-compose.yml files
+    - name: Start docker-compose.yml files
       docker_compose:
         project_src: /opt/docker/docker_compose
         recreate: always
@@ -109,14 +109,15 @@
           # - sonar.yml
           # - transmission.yml
 
-    - name: "cleanup docker"
+    - name: "Cleanup docker"
       cron:
         name: "cleanup docker"
         hour: "23"
         job: "docker system prune --all -f && docker volume prune --force"
 
-    - name: "update the system"
+    - name: "Update the system"
       cron:
         name: "update the system"
         hour: "23"
         job: "xbps-install -Syyu"
+
